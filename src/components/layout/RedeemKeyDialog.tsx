@@ -46,10 +46,19 @@ export default function RedeemKeyDialog({ open, onOpenChange }: RedeemKeyDialogP
       );
 
       if (error || data?.error) {
-        setResult({
-          type: 'error',
-          message: data?.error || error?.message || 'Failed to redeem key.',
-        });
+        // supabase-js doesn't put the response body in error.message on a
+        // non-2xx status — it's on error.context (the raw Response), so we
+        // have to parse it ourselves to get the real "Invalid key" etc. text.
+        let message = data?.error;
+        if (!message && error && 'context' in error) {
+          try {
+            const body = await (error as any).context.json();
+            message = body?.error;
+          } catch {
+            /* context wasn't JSON / already consumed */
+          }
+        }
+        setResult({ type: 'error', message: message || error?.message || 'Failed to redeem key.' });
         return;
       }
 
