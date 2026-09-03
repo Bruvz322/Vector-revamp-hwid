@@ -13,9 +13,7 @@ import { KeyRound, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 
-// TODO: confirm this matches the actual deployed function slug/path
-// (whatever name you use elsewhere for the /user/products, /download/:id, etc. calls).
-const EDGE_FUNCTION_NAME = 'api';
+const EDGE_FUNCTION_NAME = 'hwid-api';
 
 interface RedeemKeyDialogProps {
   open: boolean;
