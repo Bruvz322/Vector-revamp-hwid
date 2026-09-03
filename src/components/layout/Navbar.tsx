@@ -4,13 +4,15 @@ import { useAuth } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ShoppingCart, User, Shield, Package, LogOut, Clock, Download, Megaphone, Eye, EyeOff } from 'lucide-react';
+import { ShoppingCart, User, Shield, Package, LogOut, Clock, Download, Megaphone, Eye, EyeOff, KeyRound } from 'lucide-react';
 import { motion } from 'framer-motion';
+import RedeemKeyDialog from './RedeemKeyDialog';
 
 export default function Navbar() {
   const { user, logout, updateShowEmail, isStaff, userRoleLabels } = useAuth();
   const location = useLocation();
   const [discordLink, setDiscordLink] = useState('https://discord.gg/');
+  const [redeemOpen, setRedeemOpen] = useState(false);
 
   useEffect(() => {
     const fetchDiscordLink = async () => {
@@ -95,6 +97,16 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 border-border/50 hover:border-primary/30 transition-all duration-300"
+            onClick={() => setRedeemOpen(true)}
+          >
+            <KeyRound className="w-4 h-4" />
+            <span className="hidden sm:inline">Redeem Key</span>
+          </Button>
+
           <a href={discordLink} target="_blank" rel="noopener noreferrer">
             <Button variant="outline" size="sm" className="gap-2 border-border/50 hover:border-primary/30 transition-all duration-300">
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
@@ -156,6 +168,8 @@ export default function Navbar() {
           </Link>
         )}
       </div>
+
+      <RedeemKeyDialog open={redeemOpen} onOpenChange={setRedeemOpen} />
     </motion.nav>
   );
 }
