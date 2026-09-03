@@ -10,7 +10,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { KeyRound, Loader2, CheckCircle2, AlertCircle } from 'lucide-react';
-import { useAuth } from '@/lib/auth';
 import { supabase } from '@/integrations/supabase/client';
 
 const EDGE_FUNCTION_NAME = 'hwid-api';
@@ -21,12 +20,6 @@ interface RedeemKeyDialogProps {
 }
 
 export default function RedeemKeyDialog({ open, onOpenChange }: RedeemKeyDialogProps) {
-  // TODO: `apiKey` is a placeholder. Swap this for whatever your auth context
-  // actually exposes to authenticate calls to the edge function — the same
-  // token your app already sends as `Authorization: Bearer <token>` for the
-  // other protected endpoints (user/products, download/:id, etc.).
-  const { apiKey } = useAuth() as { apiKey?: string };
-
   const [keyValue, setKeyValue] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -36,12 +29,19 @@ export default function RedeemKeyDialog({ open, onOpenChange }: RedeemKeyDialogP
     setLoading(true);
     setResult(null);
 
+    const sessionToken = localStorage.getItem('session_token');
+    if (!sessionToken) {
+      setResult({ type: 'error', message: 'You must be logged in to redeem a key.' });
+      setLoading(false);
+      return;
+    }
+
     try {
       const { data, error } = await supabase.functions.invoke(
         `${EDGE_FUNCTION_NAME}/keys/redeem`,
         {
           body: { key: keyValue.trim() },
-          headers: apiKey ? { Authorization: `Bearer ${apiKey}` } : undefined,
+          headers: { Authorization: `Bearer ${sessionToken}` },
         }
       );
 
