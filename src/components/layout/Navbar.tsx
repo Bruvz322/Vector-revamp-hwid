@@ -104,7 +104,7 @@ export default function Navbar() {
             onClick={() => setRedeemOpen(true)}
           >
             <KeyRound className="w-4 h-4" />
-            <span className="hidden sm:inline"></span>
+            
           </Button>
 
           <a href={discordLink} target="_blank" rel="noopener noreferrer">
