@@ -71,7 +71,6 @@ useEffect(() => {
   
 const fetchProducts = async () => {
   setIsLoading(true);
-  await supabase.rpc('set_current_user_id', { user_id: user.id });
   const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
   if (data) setProducts(data as Product[]);
   setIsLoading(false);
@@ -158,11 +157,22 @@ const fetchProducts = async () => {
 
       let productId = editingId;
 
+      const sessionToken = localStorage.getItem('session_token');
+
       if (editingId) {
-        await supabase.from('products').update(productData).eq('id', editingId);
+        await fetch(`https://ilyahgbqjdgsscjhqtwb.supabase.co/functions/v1/hwid-api/products/${editingId}`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${sessionToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(productData),
+        });
       } else {
-        const { data } = await supabase.from('products').insert(productData).select().single();
-        if (data) productId = data.id;
+        const res = await fetch(`https://ilyahgbqjdgsscjhqtwb.supabase.co/functions/v1/hwid-api/products`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${sessionToken}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(productData),
+        });
+        const json = await res.json();
+        if (json.data) productId = json.data.id;
       }
 
       // Save pricing plans
@@ -200,7 +210,11 @@ const fetchProducts = async () => {
 
   const deleteProduct = async (id: string) => {
     if (!confirm('Are you sure?')) return;
-    await supabase.from('products').delete().eq('id', id);
+    const sessionToken = localStorage.getItem('session_token');
+    await fetch(`https://ilyahgbqjdgsscjhqtwb.supabase.co/functions/v1/hwid-api/products/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${sessionToken}` },
+    });
     await supabase.from('site_settings').delete().eq('key', `pricing_plans_${id}`);
     toast({ title: 'Product deleted' });
     fetchProducts();
