@@ -68,12 +68,13 @@ export default function ProductManagement() {
     fetchProducts();
   }, []);
 
-  const fetchProducts = async () => {
-    setIsLoading(true);
-    const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
-    if (data) setProducts(data as Product[]);
-    setIsLoading(false);
-  };
+const fetchProducts = async () => {
+  setIsLoading(true);
+  await supabase.rpc('set_current_user_id', { user_id: user.id });
+  const { data } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+  if (data) setProducts(data as Product[]);
+  setIsLoading(false);
+};
 
   const loadPricingPlans = async (productId: string) => {
     const { data } = await supabase
