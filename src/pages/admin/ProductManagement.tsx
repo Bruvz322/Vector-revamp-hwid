@@ -65,10 +65,10 @@ export default function ProductManagement() {
   const [isSaving, setIsSaving] = useState(false);
   const [pricingPlans, setPricingPlans] = useState<PricingPlanDraft[]>([]);
   
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
+useEffect(() => {
+  if (user) fetchProducts();
+}, [user]);
+  
 const fetchProducts = async () => {
   setIsLoading(true);
   await supabase.rpc('set_current_user_id', { user_id: user.id });
