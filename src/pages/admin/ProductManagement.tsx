@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { useToast } from '@/hooks/use-toast';
 import type { Product, PricingPlan } from '@/lib/types';
 import { Plus, Edit, Trash2, Loader2, Package, Save, X } from 'lucide-react';
-const { user } = useAuth();
+import { useAuth } from '@/lib/auth';
 interface PricingPlanDraft {
   id: string;
   name: string;
@@ -56,6 +56,7 @@ const emptyProduct: Partial<Product> = {
 
 export default function ProductManagement() {
   const { toast } = useToast();
+  const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showEditor, setShowEditor] = useState(false);
@@ -63,7 +64,7 @@ export default function ProductManagement() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [pricingPlans, setPricingPlans] = useState<PricingPlanDraft[]>([]);
-
+  
   useEffect(() => {
     fetchProducts();
   }, []);
