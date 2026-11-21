@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { useToast } from '@/hooks/use-toast';
 import type { Product, PricingPlan } from '@/lib/types';
 import { Plus, Edit, Trash2, Loader2, Package, Save, X } from 'lucide-react';
-
+const { user } = useAuth();
 interface PricingPlanDraft {
   id: string;
   name: string;
