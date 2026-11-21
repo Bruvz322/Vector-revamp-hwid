@@ -25,7 +25,7 @@ export default function Dashboard() {
       setIsLoading(true);
 
       const [prodRes, subRes, settingsRes] = await Promise.all([
-        supabase.from('products').select('*').eq('is_active', true).order('name'),
+        supabase.from('public_products').select('*').eq('is_active', true).order('name'),
         supabase.from('subscriptions').select('*').eq('user_id', user.id),
         supabase.from('site_settings').select('key, value').like('key', 'pricing_plans_%'),
       ]);
